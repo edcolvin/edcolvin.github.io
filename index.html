@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="x-ua-compatible" content="ie=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>counter</title>
+
+    <style>
+      body {
+        color: wheat;
+        background-color: DarkSlateGrey;
+        font-family: sans-serif;
+      }
+      .app-frame {
+        width: 90%;
+        max-width: 400px;
+        border-radius: 3px;
+        margin: 20px auto 0px auto;
+      }
+      h1 {
+        font-size: 2rem;
+        margin: 50px auto;
+        width: 30%;
+      }
+      .controls {
+        margin: 30px auto 50px auto;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-around;
+      }
+      button {
+        border: 1px solid wheat;
+        border-radius: 3px;
+        height: 6rem;
+        background: none;
+        box-shadow: none;
+        border-radius: 3px;
+        color: wheat;
+        font-size: 3rem;
+        width: 45%;
+      }
+      button:active {
+        background-color: rgba(223, 199, 153, 0.397);
+      }
+      #elapsed-time {
+        margin: 20px auto;
+        text-align: center;
+        font-family: "mono";
+        font-size: 4rem;
+      }
+      #counter-button {
+        width: 100%;
+        height: 10rem;
+        margin: 20px auto;
+        font-size: 7rem;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="app-frame">
+      <h1>counter</h1>
+      <div class="controls">
+        <button id="start-stop-button" onclick="startStopClick(event)">
+          start
+        </button>
+        <button onclick="resetClick(event)">reset</button>
+      </div>
+      <button id="counter-button" onclick="counterClick(event)">0</button>
+      <div id="elapsed-time">00:00:00:00</div>
+    </div>
+  </body>
+  <script>
+    let height = document.body.clientHeight
+    let width = document.body.clientWidth
+    let = div = document.createElement("div")
+    div.innerHTML = `${width} X ${height}`
+    document.body.appendChild(div)
+
+    let running = false
+    let counterClicks = 0
+    let startTime = 0
+    let runningTime = 0
+    let displayTimerCallback = -1
+    const timeDisplay = document.querySelector("#elapsed-time")
+    const counterDisplay = document.querySelector("#counter-button")
+    const startStopButton = document.querySelector("#start-stop-button")
+
+    function doReset() {
+      if (displayTimerCallback !== -1) {
+        clearInterval(displayTimerCallback)
+      }
+      running = false
+      counterClicks = 0
+      startTime = 0
+      runningTime = 0
+      displayTimerCallback = -1
+      timeDisplay.innerHTML = "00:00:00:00"
+      counterDisplay.innerHTML = "0"
+      startStopButton.innerHTML = "start"
+    }
+
+    function startStopClick(event) {
+      if (running) {
+        clearInterval(displayTimerCallback)
+        displayTimerCallback = -1
+        runningTime = runningTime + performance.now() - startTime
+        running = false
+        startStopButton.innerHTML = "start"
+      } else {
+        startTime = performance.now()
+        displayTimerCallback = setInterval(displayElapsed, 100)
+        running = true
+        startStopButton.innerHTML = "pause"
+      }
+    }
+
+    function resetClick(event) {
+      doReset()
+    }
+
+    function counterClick(event) {
+      if (running) {
+        counterClicks++
+        counterDisplay.innerHTML = counterClicks.toString()
+      }
+    }
+
+    function displayElapsed() {
+      const now = performance.now()
+      const elapsedTime = now - startTime + runningTime
+      const hours = (Math.trunc(elapsedTime / 360000) % 24)
+        .toString()
+        .padStart(2, "0")
+      const minutes = (Math.trunc(elapsedTime / 60000) % 60)
+        .toString()
+        .padStart(2, "0")
+      const seconds = (Math.trunc(elapsedTime / 1000) % 60)
+        .toString()
+        .padStart(2, "0")
+      const hundredths = (Math.trunc(elapsedTime / 10) % 100)
+        .toString()
+        .padStart(2, "0")
+      timeDisplay.innerHTML = `${hours}:${minutes}:${seconds}:${hundredths}`
+    }
+  </script>
+</html>
