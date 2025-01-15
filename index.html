@@ -16,16 +16,15 @@
       .app-frame {
         width: 90%;
         max-width: 400px;
-        border-radius: 3px;
         margin: 20px auto 0px auto;
       }
       h1 {
         font-size: 2rem;
-        margin: 50px auto;
+        margin: 20px auto;
         width: 30%;
       }
       .controls {
-        margin: 30px auto 50px auto;
+        margin: 30px auto;
         display: flex;
         flex-direction: row;
         justify-content: space-around;
@@ -44,6 +43,10 @@
       button:active {
         background-color: rgba(223, 199, 153, 0.397);
       }
+      button:disabled {
+        background-color: rgba(223, 199, 153, 0.137);
+        color: rgba(245, 222, 179, 0.527);
+      }
       #elapsed-time {
         margin: 20px auto;
         text-align: center;
@@ -52,9 +55,10 @@
       }
       #counter-button {
         width: 100%;
-        height: 10rem;
+        height: 15rem;
         margin: 20px auto;
         font-size: 7rem;
+        user-select: none;
       }
     </style>
   </head>
@@ -68,7 +72,9 @@
         </button>
         <button onclick="resetClick(event)">reset</button>
       </div>
-      <button id="counter-button" onclick="counterClick(event)">0</button>
+      <button id="counter-button" disabled onclick="counterClick(event)">
+        0
+      </button>
       <div id="elapsed-time">00:00:00:00</div>
     </div>
   </body>
@@ -83,37 +89,38 @@
     let counterClicks = 0
     let startTime = 0
     let runningTime = 0
-    let displayTimerCallback = -1
+    let displayTimerCallback = 0
+    let pauseClicked = false
+
     const timeDisplay = document.querySelector("#elapsed-time")
     const counterDisplay = document.querySelector("#counter-button")
     const startStopButton = document.querySelector("#start-stop-button")
+    const counterButton = document.querySelector("#counter-button")
 
     function doReset() {
-      if (displayTimerCallback !== -1) {
+      if (displayTimerCallback !== 0) {
         clearInterval(displayTimerCallback)
       }
       running = false
       counterClicks = 0
       startTime = 0
       runningTime = 0
-      displayTimerCallback = -1
+      displayTimerCallback = 0
       timeDisplay.innerHTML = "00:00:00:00"
       counterDisplay.innerHTML = "0"
       startStopButton.innerHTML = "start"
+      counterButton.disabled = true
     }
 
     function startStopClick(event) {
       if (running) {
-        clearInterval(displayTimerCallback)
-        displayTimerCallback = -1
-        runningTime = runningTime + performance.now() - startTime
-        running = false
-        startStopButton.innerHTML = "start"
+        running = false // state will be updated inside the setInterval callback
       } else {
         startTime = performance.now()
         displayTimerCallback = setInterval(displayElapsed, 100)
         running = true
         startStopButton.innerHTML = "pause"
+        counterButton.disabled = false
       }
     }
 
@@ -144,6 +151,14 @@
         .toString()
         .padStart(2, "0")
       timeDisplay.innerHTML = `${hours}:${minutes}:${seconds}:${hundredths}`
+      if (!running) {
+        clearInterval(displayTimerCallback)
+        displayTimerCallback = -1
+        runningTime = runningTime + performance.now() - startTime
+        running = false
+        startStopButton.innerHTML = "start"
+        counterButton.disabled = true
+      }
     }
   </script>
 </html>
