@@ -131,7 +131,7 @@
     function displayElapsed() {
       const now = performance.now()
       const elapsedTime = now - startTime + runningTime
-      const hours = (Math.trunc(elapsedTime / 360000) % 24)
+      const hours = (Math.trunc(elapsedTime / 3600000) % 24)
         .toString()
         .padStart(2, "0")
       const minutes = (Math.trunc(elapsedTime / 60000) % 60)
