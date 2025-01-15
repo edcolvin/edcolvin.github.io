@@ -2,4 +2,4 @@
 
 personal github page
 
-I am using this to host a simple, self-contained counter app for exercise.
+I am using this to host a simple, self-contained app for counting laps on a stairway.
